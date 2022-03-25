@@ -5,6 +5,15 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
+const routes = require("./routes");
+
+app.use(express.static(path.join(__dirname, 'public'))); // set cứng theo đường dẫn http://localhost:3000/img/logo.jpg
+
+app.use(express.urlencoded({
+    extended: true
+}));//để lấy giá trị submit
+app.use(express.json());//xml , fetch , axios ....
+
 //HTTP
 app.use(morgan('combined'));
 
@@ -13,12 +22,9 @@ app.engine('hbs', expHbs.engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set("views", path.join(__dirname, 'resources', 'views'));
 
-app.get('/', (req, res) => {
-    res.render('home');
-});
-app.get('/news', (req, res) => {
-    res.render('news');
-});
+// routes init
+routes(app);
+
 
 app.listen(port, () => {
 
