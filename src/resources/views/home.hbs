@@ -1,1 +1,20 @@
-<h1>helloo!</h1>
+<div class="mt-4">
+    <div class="row">
+        <div class="grid_box">
+            {{#each courses}}
+            <div class="card card_count">
+                <a href="/course/{{this.slug}}">
+                    <img class="card-img-top" src="{{this.images}}" alt="Card image cap">
+                </a>
+                <div class="card-body">
+                    <a href="/course/{{this.slug}}">
+                        <h5 class="card-title">{{this.title}}</h5>
+                    </a>
+                    <p class="card-text">{{this.description}}</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
