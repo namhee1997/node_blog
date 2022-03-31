@@ -1,0 +1,162 @@
+<form class="mt-4" name="form_all_submit" method="POST" action="/me/restore/courses">
+    <h2>Thùng rác của tôi</h2>
+    <a href="/me/stored/courses">Trở lại Khóa học</a>
+    <div class="mt-4 d-flex_">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="checkall">
+            <label class="form-check-label" for="checkall">Chọn tất cả</label>
+        </div>
+        <select class="form-control" name="handleSubmit" id="exampleFormControlSelect1" required>
+            <option value="">--Chọn hành động--</option>
+            <option value="restore">Khôi phục</option>
+            <option value="deleteDestroy">Xóa vĩnh viễn</option>
+        </select>
+        <button type="submit" class="btn btn-primary submit_all" disabled>Thực hiện</button>
+
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Chọn</th>
+                <th scope="col">#</th>
+                <th scope="col">Tên khóa học
+                    {{{sortTable 'title' _sort}}}
+                </th>
+                <th scope="col">Thời gian xóa
+                    {{{sortTable 'deletedAt' _sort}}}
+                </th>
+                <th scope="col">Mô tả
+                    {{{sortTable 'description' _sort}}}
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each cours }}
+            <tr>
+                <th>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" value="{{this._id}}" name="CourseIds[]"
+                            id="exampleCheck1">
+                    </div>
+                </th>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.title}}</td>
+                <td>{{this.deletedAt}}</td>
+                <td>{{this.description}}</td>
+                <td>
+                    <a href="" data-id="{{this._id}}" class="btn btn-link btn_restore">Phục hồi</a>
+                    <a href="" class="btn btn-link click_delete" data-id="{{this._id}}" data-toggle="modal"
+                        data-target="#exampleModal">Xóa vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td class="text-center" colspan="5">
+                    Thùng rác trống
+                    <a href="/me/stored/courses">Danh sách khóa học!</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- --}}
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xóa Khóa học</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Hành động này không thể khôi phục. Bạn có muốn xóa!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="confirm_delete" class="btn btn-danger">Xóa vĩnh viễn</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" name="del_method" action="">
+</form>
+<form method="POST" name="restore_method" action="">
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn_delete = $(".click_delete");
+        for (let i = 0; i < btn_delete.length; i++) {
+            $(btn_delete[i]).click((e) => {
+                let id = $(btn_delete[i]).attr("data-id");
+                let method = `/course/${id}/force?_method=DELETE`;
+                jQuery(document.forms['del_method']).attr("action", method);
+            })
+        }
+        $("#confirm_delete").click(() => {
+            jQuery(document.forms['del_method']).submit();
+        })
+
+        const btn_restore = $(".btn_restore");
+
+        for (let i = 0; i < btn_delete.length; i++) {
+            $(btn_restore[i]).click((e) => {
+                e.preventDefault();
+                let id = $(btn_restore[i]).attr("data-id");
+                let method = `/course/${id}/restore?_method=PATCH`;
+                jQuery(document.forms['restore_method']).attr("action", method);
+                jQuery(document.forms['restore_method']).submit();
+            })
+        }
+
+        //
+        let checkall = $("#checkall");
+        let listInput = $("input[name='CourseIds[]']");
+        checkall.on("change", () => {
+            let checkboxAll = $("#checkall").is(":checked");
+            if (checkboxAll) {
+                listInput.prop("checked", true);
+                $(".submit_all").removeAttr("disabled");
+            } else {
+                listInput.prop("checked", false);
+                $(".submit_all").attr("disabled", true);
+            }
+        })
+
+        listInput.on("change", () => {
+            let listArrayTotal = [];
+
+            $("input[name='CourseIds[]']:checked").each(function () {
+                listArrayTotal.push($(this).val());
+            });
+            let listInputChecked = listInput.length == listArrayTotal.length;
+            if (listArrayTotal.length > 0) {
+                $(".submit_all").removeAttr("disabled");
+            } else {
+                $(".submit_all").attr("disabled", true);
+            }
+            if (listInputChecked) {
+                checkall.prop("checked", true);
+            } else {
+                checkall.prop("checked", false);
+            }
+        })
+        $(".submit_all").on("click", (e) => {
+            let listArrayTotal = [];
+            let val = $("#exampleFormControlSelect1").val();
+            let checkSubmit = $(".submit_all").attr("disabled");
+            $("input[name='CourseIds[]']:checked").each(function () {
+                listArrayTotal.push($(this).val());
+            });
+            if (checkSubmit && val != '') {
+                e.preventDefault();
+            }
+            console.log(checkSubmit);
+        })
+    })
+</script>
