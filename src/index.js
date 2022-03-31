@@ -34,31 +34,7 @@ app.use(middelweresSort);
 //ENGINE
 app.engine('hbs', expHbs.engine({
     extname: '.hbs',
-    helpers: {
-        sum: (a, b) => a + b,
-        sortTable: (fieldName, sort) => {
-
-            let sortTypeCheck = fieldName == sort.column ? sort.type : "default";
-
-            const icons = {
-                default: "elevator",
-                asc: "sort-ascending",
-                desc: "sort-descending",
-            }
-            const typeSorts = {
-                default: "desc",
-                asc: "desc",
-                desc: "asc",
-            }
-
-            let icon = icons[sortTypeCheck]
-            let typeSort = typeSorts[sortTypeCheck]
-
-            return `<a href="?_sort&column=${fieldName}&type=${typeSort}">
-                        <span class="oi" data-glyph="${icon}"></span>
-                    </a>`;
-        },
-    }
+    helpers: require("./app/helper/handlebarHelper")
 }));
 app.set('view engine', 'hbs');
 app.set("views", path.join(__dirname, 'resources', 'views'));

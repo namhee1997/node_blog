@@ -20,13 +20,7 @@ class meController {
         ////them sort bằng tay-- nên dùng middelweres
         let courseQuery = Cours.findDeleted({});
 
-        if (req.query.hasOwnProperty("_sort")) {
-            courseQuery = courseQuery.sort({
-                [req.query.column]: req.query.type
-            })
-        }
-
-        courseQuery.then(e => res.render('me/trash-courses', {
+        Cours.findDeleted({}).sortStable(req).then(e => res.render('me/trash-courses', {
             cours: muntipeMongooseToObject(e)
         }))
             .catch(next)
